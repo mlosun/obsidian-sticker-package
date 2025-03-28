@@ -1,94 +1,46 @@
-# Obsidian Sample Plugin
+# 插件名称：obsidian-sticker-package
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+## 简介
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+这个插件允许你设置一个 Obsidian 目录，然后将其中的所有图片文件作为表情包。你可以在编辑器中使用通过右键快速插入这些表情包。
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## 主要功能
 
-## First time developing plugins?
+- 从指定的目录中获取所有图片文件作为表情包。
+- 在编辑器中通过右键快速插入这些表情包。
+- 允许设置插入表情包的默认尺寸。
 
-Quick starting guide for new plugin devs:
+> ❗注意：本插件不提供表情包素材，请自行获取素材并放入Obsidian目录中。
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+###### 1-设置选项
+![[images\1-设置选项.png]]
 
-## Releasing new releases
+###### 2-右键打开
+![[images\2-右键打开.png]]
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+###### 3-选择表情包
+![[images\3-选择表情包.png]]
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+###### 4-插入表情包
+![[images\4-插入表情包.png]]
 
-## Adding your plugin to the community plugin list
+## 安装方法：
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+本插件目前还未在 Obsidian 插件市场发布，您可以通过：
+- 使用 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 插件进行安装
+- 前往 [Releases](https://github.com/mlosun/obsidian-sticker-package/releases) 页面下载最新版本的插件文件手动安装
 
-## How to use
+#### 特别说明：
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+💡 灵感来源：[Obsidian 中文论坛](https://forum-zh.obsidian.md/t/topic/48387) 提供的插件思路
+🎉 特别感谢：[中文 Obsidian 开发者文档](https://github.com/LIUBINfighter/obsidian-dev-docs-zh) 提供的发布方案
 
-## Manually installing the plugin
+这个插件完全是由AI生成的，没有经过任何人工修改。
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+实际上我从未接触过Node.js，并且也仅有半年左右的 Python 编程经验，也没有能力去修改。
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+我很早就有想写一个 Obsidian 插件的想法，但是一方面目前没有什么具体的需求，另一方面也不懂 Obsidian 插件的相关技术。
 
-## Funding URL
+今天恰巧在论坛上看到了这个需求，就想试试能不能自己通过 AI 写一个。
 
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+经过大约6个小时的折腾，终于完成了这个插件，自己做了简单测试，感觉还不错。也作为自己第一个开源项目发布出来。
