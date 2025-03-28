@@ -13,16 +13,16 @@
 > ❗注意：本插件不提供表情包素材，请自行获取素材并放入Obsidian目录中。
 
 ###### 1-设置选项
-![[images\1-设置选项.png]]
+![1-设置选项](https://raw.githubusercontent.com/mlosun/obsidian-sticker-package/refs/heads/master/images/1-%E8%AE%BE%E7%BD%AE%E9%80%89%E9%A1%B9.png)
 
 ###### 2-右键打开
-![[images\2-右键打开.png]]
+![2-右键打开](https://raw.githubusercontent.com/mlosun/obsidian-sticker-package/refs/heads/master/images/2-%E5%8F%B3%E9%94%AE%E6%89%93%E5%BC%80.png)
 
 ###### 3-选择表情包
-![[images\3-选择表情包.png]]
+![3-选择表情包](https://raw.githubusercontent.com/mlosun/obsidian-sticker-package/refs/heads/master/images/3-%E9%80%89%E6%8B%A9%E8%A1%A8%E6%83%85%E5%8C%85.png)
 
 ###### 4-插入表情包
-![[images\4-插入表情包.png]]
+![4-插入表情包](https://raw.githubusercontent.com/mlosun/obsidian-sticker-package/refs/heads/master/images/4-%E6%8F%92%E5%85%A5%E8%A1%A8%E6%83%85%E5%8C%85.png)
 
 ## 安装方法：
 
