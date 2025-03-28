@@ -33,6 +33,7 @@
 #### 特别说明：
 
 💡 灵感来源：[Obsidian 中文论坛](https://forum-zh.obsidian.md/t/topic/48387) 提供的插件思路
+
 🎉 特别感谢：[中文 Obsidian 开发者文档](https://github.com/LIUBINfighter/obsidian-dev-docs-zh) 提供的发布方案
 
 这个插件完全是由AI生成的，没有经过任何人工修改。
