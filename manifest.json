@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-sticker-package",
+	"name": "Sticker Package",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "快速插入表情包图片到Obsidian笔记中",
+	"author": "mlosun",
+	"authorUrl": "https://github.com/mlosun/obsidian-sticker-package",
+	"fundingUrl": "",
 	"isDesktopOnly": false
 }

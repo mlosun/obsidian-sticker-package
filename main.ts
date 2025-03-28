@@ -1,85 +1,129 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Menu, Modal, Plugin, PluginSettingTab, Setting, TFile, TFolder } from 'obsidian';
 
-// Remember to rename these classes and interfaces!
-
-interface MyPluginSettings {
-	mySetting: string;
+export interface StickerPackageSettings {
+    stickerFolder: string;
+    defaultSize: number;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+export const DEFAULT_SETTINGS: StickerPackageSettings = {
+    stickerFolder: '',
+    defaultSize: 50
+};
+
+export class StickerModal extends Modal {
+    plugin: StickerPackagePlugin;
+    stickerFiles: TFile[] = [];
+    searchInput: HTMLInputElement;
+    stickerContainer: HTMLElement;
+    onChoose: (file: TFile) => void;
+
+    constructor(app: App, plugin: StickerPackagePlugin, onChoose: (file: TFile) => void) {
+        super(app);
+        this.plugin = plugin;
+        this.onChoose = onChoose;
+    }
+
+    async onOpen() {
+        const { contentEl } = this;
+
+        // 创建搜索框
+        contentEl.addClass('sticker-package-modal');
+        const searchContainer = contentEl.createDiv();
+        this.searchInput = searchContainer.createEl('input', {
+            type: 'text',
+            placeholder: '搜索表情包...',
+            cls: 'sticker-package-search'
+        });
+        this.searchInput.addEventListener('input', () => this.updateStickerList());
+
+        // 创建表情包容器
+        this.stickerContainer = contentEl.createDiv({ cls: 'sticker-package-grid' });
+
+        // 加载表情包
+        await this.loadStickers();
+    }
+
+    async loadStickers() {
+        if (!this.plugin.settings.stickerFolder) {
+            this.stickerContainer.createEl('div', { text: '请先在设置中选择表情包目录' });
+            return;
+        }
+
+        const folder = this.app.vault.getAbstractFileByPath(this.plugin.settings.stickerFolder);
+        if (!(folder instanceof TFolder)) {
+            this.stickerContainer.createEl('div', { text: '无法加载表情包目录' });
+            return;
+        }
+
+        this.stickerFiles = folder.children.filter(file => 
+            file instanceof TFile && 
+            ['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(file.extension.toLowerCase())
+        ) as TFile[];
+
+        this.updateStickerList();
+    }
+
+    updateStickerList() {
+        this.stickerContainer.empty();
+        const searchTerm = this.searchInput.value.toLowerCase();
+
+        const filteredStickers = this.stickerFiles.filter(file =>
+            file.basename.toLowerCase().includes(searchTerm)
+        );
+
+        for (const file of filteredStickers) {
+            const stickerItem = this.stickerContainer.createDiv({ cls: 'sticker-package-item' });
+            const img = stickerItem.createEl('img', {
+                cls: 'sticker-preview',
+                attr: {
+                    src: this.app.vault.getResourcePath(file),
+                    alt: file.basename
+                }
+            });
+
+            stickerItem.addEventListener('click', () => {
+                this.onChoose(file);
+                this.close();
+            });
+
+            stickerItem.createEl('div', {
+                cls: 'sticker-name',
+                text: file.basename
+            });
+        }
+    }
+
+    onClose() {
+        const { contentEl } = this;
+        contentEl.empty();
+    }
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class StickerPackagePlugin extends Plugin {
+	settings: StickerPackageSettings;
 
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
+		// 注册设置页面
+		this.addSettingTab(new StickerPackageSettingTab(this.app, this));
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
-
-		// This adds a simple command that can be triggered anywhere
-		this.addCommand({
-			id: 'open-sample-modal-simple',
-			name: 'Open sample modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'sample-editor-command',
-			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-sample-modal-complex',
-			name: 'Open sample modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-			}
-		});
-
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
-	}
-
-	onunload() {
-
+		// 注册编辑器上下文菜单
+		this.registerEvent(
+			this.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, view: MarkdownView) => {
+				menu.addItem((item) => {
+					item
+						.setTitle('插入表情包')
+						.setIcon('image')
+						.onClick(async () => {
+                            new StickerModal(this.app, this, (file) => {
+                                const pos = editor.getCursor();
+                                editor.replaceRange(`![[${file.path}|${this.settings.defaultSize}]]`, pos);
+                            }).open();
+						});
+				});
+			})
+		);
 	}
 
 	async loadSettings() {
@@ -91,44 +135,47 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
+export class StickerPackageSettingTab extends PluginSettingTab {
+    plugin: StickerPackagePlugin;
 
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
+    constructor(app: App, plugin: StickerPackagePlugin) {
+        super(app, plugin);
+        this.plugin = plugin;
+    }
 
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
-	}
-}
+    display(): void {
+        const { containerEl } = this;
+        containerEl.empty();
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+        containerEl.createEl('h2', { text: '表情包设置' });
 
-	constructor(app: App, plugin: MyPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
+        new Setting(containerEl)
+            .setName('表情包目录')
+            .setDesc('选择存放表情包图片的目录')
+            .addDropdown(dropdown => {
+                const folders = this.app.vault.getAllLoadedFiles()
+                    .filter((f: any) => f instanceof TFolder)
+                    .map((f: any) => f.path);
+                
+                dropdown
+                    .addOptions({'': '请选择目录', ...Object.fromEntries(folders.map((f: any) => [f, f]))}) 
+                    .setValue(this.plugin.settings.stickerFolder)
+                    .onChange(async (value) => {
+                        this.plugin.settings.stickerFolder = value;
+                        await this.plugin.saveSettings();
+                    });
+            });
 
-	display(): void {
-		const {containerEl} = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
-	}
+        new Setting(containerEl)
+            .setName('表情包默认尺寸')
+            .setDesc('设置插入表情包时的默认尺寸（像素）')
+            .addText(text => text
+                .setPlaceholder('50')
+                .setValue(String(this.plugin.settings.defaultSize))
+                .onChange(async (value) => {
+                    const size = parseInt(value) || 50;
+                    this.plugin.settings.defaultSize = size;
+                    await this.plugin.saveSettings();
+                }));
+    }
 }

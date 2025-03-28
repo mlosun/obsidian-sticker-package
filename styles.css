@@ -1,8 +1,35 @@
-/*
+.sticker-package-modal {
+    padding: 1rem;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.sticker-package-search {
+    width: 100%;
+    margin-bottom: 1rem;
+}
 
-If your plugin does not need CSS, delete this file.
+.sticker-package-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
 
-*/
+.sticker-package-item {
+    cursor: pointer;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center;
+}
+
+.sticker-package-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sticker-package-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
